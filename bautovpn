@@ -7,7 +7,7 @@ country=US
 if [ $# -ge 1 ]
 then
     case ${#1} in
-        2) country=$(echo $1 | tr '[a-z]' '[A-Z]') ;;
+        2) country=$(echo "$1" | tr 'a-z' 'A-Z') ;;
         *) echo "[bautovpn] unknown country, using: US" ;;
     esac
 fi
