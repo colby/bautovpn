@@ -14,7 +14,7 @@ fi
 
 function cull() {
     local found=0
-    echo -n "[bautovpn] bearching for $country VPN: "
+    echo -n "[bautovpn] searching for $country VPN: "
 
     while read -r line
     do
