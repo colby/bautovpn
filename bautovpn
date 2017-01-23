@@ -1,0 +1,44 @@
+#!/bin/bash
+
+set -e
+
+country=US
+
+if [ $# -ge 1 ]
+then
+    case ${#1} in
+        2) country=$(echo $1 | tr '[a-z]' '[A-Z]') ;;
+        *) echo "[bautovpn] unknown country, using: US" ;;
+    esac
+fi
+
+function cull() {
+    local found=0
+    echo -n "[bautovpn] bearching for $country VPN: "
+
+    while read -r line
+    do
+        IFS=$','
+        read -ra VPN <<< "$line"
+        if [[ "${VPN[6]}" == "$country" && ! -z "${VPN[14]}" ]]
+        then
+            found=1
+            echo "${VPN[1]}"
+            echo "${VPN[14]}" | base64 --decode > /tmp/vpn
+            employ ${VPN[1]}
+        fi
+    done < <(curl -sL http://www.vpngate.net/api/iphone/)
+
+    if [ $found -eq 0 ]
+    then
+        echo "error"
+        echo "[bautovpn] could not find $country in list" && exit
+    fi
+}
+
+function employ() {
+    echo "[bautovpn] connecting openvpn to $1 (using sudo)"
+    sudo openvpn /tmp/vpn
+}
+
+cull
